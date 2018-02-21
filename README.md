@@ -1,6 +1,7 @@
 # Udacity FEND - Feed Reader Testing
 
 A project to practice TDD in JS with Jasmine.  
+Fork of: http://github.com/udacity/frontend-nanodegree-feedreader  
   
 
 ## To Dos
