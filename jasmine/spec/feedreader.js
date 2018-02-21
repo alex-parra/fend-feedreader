@@ -21,7 +21,7 @@ $(function() {
      * allFeeds in app.js to be an empty array and refresh the
      * page?
      */
-    it('Feeds list is defined and not empty', function() {
+    it('> Feeds list is defined and not empty', function() {
       expect(allFeeds).toBeDefined();
       expect(allFeeds.length).not.toBe(0);
     });
@@ -32,7 +32,7 @@ $(function() {
      * and that the URL is not empty.
      */
     allFeeds.forEach(function(f, i) {
-      it('Feed at index '+ i +' has url property and is not empty', function() {
+      it('> Feed at index '+ i +' has url property and is not empty', function() {
         expect(f.url).toBeDefined();
         expect(f.url).toBeTruthy();
       });
@@ -44,7 +44,7 @@ $(function() {
      * and that the name is not empty.
      */
     allFeeds.forEach(function(f, i) {
-      it('Feed at index '+ i +' has name property and is not empty', function() {
+      it('> Feed at index '+ i +' has name property and is not empty', function() {
         expect(f.name).toBeDefined();
         expect(f.name).toBeTruthy();
       });
@@ -59,6 +59,13 @@ $(function() {
      * the CSS to determine how we're performing the
      * hiding/showing of the menu element.
      */
+    it('> Menu is hidden by default: body class', function() {
+      expect($('body').hasClass('menu-hidden')).toBe(true);
+    });
+
+    it('> Menu is hidden by default: menu is offscreen', function() {
+      expect($('.slide-menu').offset().left).toBeLessThan(0);
+    });
 
 
      /* TODO: Write a test that ensures the menu changes
@@ -66,8 +73,22 @@ $(function() {
       * should have two expectations: does the menu display when
       * clicked and does it hide when clicked again.
       */
+    describe('> Menu changes visibility on click', function(){
+      beforeEach(function(done){
+        $('.menu-icon-link').trigger('click');
+        setTimeout(() => done(), 250);
+      });
 
+      it('> Test open menu', function() {
+        expect($('body').hasClass('menu-hidden')).toBe(false);
+        expect($('.slide-menu').offset().left).toBe(0);
+      });
 
+      it('> Test close menu', function() {
+        expect($('body').hasClass('menu-hidden')).toBe(true);
+        expect($('.slide-menu').offset().left).toBeLessThan(0);
+      });
+    });
   });
 
   /* TODO: Write a new test suite named "Initial Entries" */
