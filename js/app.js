@@ -40,48 +40,43 @@ function init() {
  * This function all supports a callback as the second parameter
  * which will be called after everything has run successfully.
  */
- function loadFeed(id, cb) {
-   var feedUrl = allFeeds[id].url,
-     feedName = allFeeds[id].name;
-
-   $.ajax({
-     type: "POST",
-     url: 'https://rsstojson.udacity.com/parseFeed',
-     data: JSON.stringify({url: feedUrl}),
-     contentType:"application/json",
-     success: function (result, status){
-
-         var container = $('.feed'),
-           title = $('.header-title'),
-           entries = result.feed.entries,
-           entriesLen = entries.length,
-           entryTemplate = Handlebars.compile($('.tpl-entry').html());
-
-         title.html(feedName);   // Set the header text
-         container.empty();      // Empty out all previous entries
-
-         /* Loop through the entries we just loaded via the Google
-          * Feed Reader API. We'll then parse that entry against the
-          * entryTemplate (created above using Handlebars) and append
-          * the resulting HTML to the list of entries on the page.
-          */
-         entries.forEach(function(entry) {
-           container.append(entryTemplate(entry));
-         });
-
-         if (cb) {
-           cb();
-         }
-         },
-     error: function (result, status, err){
-         //run only the callback without attempting to parse result due to error
-         if (cb) {
-           cb();
-         }
-         },
-     dataType: "json"
-   });
- }
+function loadFeed(id, cb) {
+  var feedUrl = allFeeds[id].url,
+    feedName = allFeeds[id].name;
+  $.ajax({
+    type: "POST",
+    url: 'https://rsstojson.udacity.com/parseFeed',
+    data: JSON.stringify({url: feedUrl}),
+    contentType:"application/json",
+    success: function (result, status){
+      var container = $('.feed'),
+          title = $('.header-title'),
+          entries = result.feed.entries,
+          entriesLen = entries.length,
+          entryTemplate = Handlebars.compile($('.tpl-entry').html());
+      title.html(feedName);   // Set the header text
+      container.empty();      // Empty out all previous entries
+      /* Loop through the entries we just loaded via the Google
+        * Feed Reader API. We'll then parse that entry against the
+        * entryTemplate (created above using Handlebars) and append
+        * the resulting HTML to the list of entries on the page.
+        */
+      entries.forEach(function(entry) {
+        container.append(entryTemplate(entry));
+      });
+      if (cb) {
+        cb();
+      }
+    },
+    error: function (result, status, err){
+      //run only the callback without attempting to parse result due to error
+      if (cb) {
+        cb();
+      }
+    },
+    dataType: "json"
+  });
+}
 
 /* Google API: Loads the Feed Reader API and defines what function
  * to call when the Feed Reader API is done loading.
@@ -96,7 +91,6 @@ $(function() {
   var container = $('.feed'),
     feedList = $('.feed-list'),
     feedItemTemplate = Handlebars.compile($('.tpl-feed-list-item').html()),
-    feedId = 0,
     menuIcon = $('.menu-icon-link');
 
   /* Loop through all of our feeds, assigning an id property to
@@ -105,11 +99,9 @@ $(function() {
    * above using Handlebars) and append it to the list of all
    * available feeds within the menu.
    */
-  allFeeds.forEach(function(feed) {
+  allFeeds.forEach(function(feed, feedId) {
     feed.id = feedId;
     feedList.append(feedItemTemplate(feed));
-
-    feedId++;
   });
 
   /* When a link in our feedList is clicked on, we want to hide
@@ -130,4 +122,5 @@ $(function() {
   menuIcon.on('click', function() {
     $('body').toggleClass('menu-hidden');
   });
+
 }());
