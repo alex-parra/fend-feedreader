@@ -34,7 +34,7 @@ $(function() {
     allFeeds.forEach(function(f, i) {
       it('> Feed at index '+ i +' has url property and is not empty', function() {
         expect(f.url).toBeDefined();
-        expect(f.url).toBeTruthy();
+        expect(f.url.length).not.toBe(0);
       });
     });
 
@@ -46,7 +46,7 @@ $(function() {
     allFeeds.forEach(function(f, i) {
       it('> Feed at index '+ i +' has name property and is not empty', function() {
         expect(f.name).toBeDefined();
-        expect(f.name).toBeTruthy();
+        expect(f.name.length).not.toBe(0);
       });
     });
   });
@@ -63,7 +63,8 @@ $(function() {
       expect($('body').hasClass('menu-hidden')).toBe(true);
     });
 
-    it('> Menu is hidden by default: menu is offscreen', function() {
+    it('> Menu is hidden by default: menu is Off-Screen', function() {
+      // tests if left edge of menu is off to the left of the screen (negative offset)
       expect($('.slide-menu').offset().left).toBeLessThan(0);
     });
 
@@ -79,12 +80,12 @@ $(function() {
         setTimeout(() => done(), 250);
       });
 
-      it('> Test open menu', function() {
+      it('> Test open menu: body class + is On-Screen', function() {
         expect($('body').hasClass('menu-hidden')).toBe(false);
         expect($('.slide-menu').offset().left).toBe(0);
       });
 
-      it('> Test close menu', function() {
+      it('> Test close menu: body class + is Off-Screen', function() {
         expect($('body').hasClass('menu-hidden')).toBe(true);
         expect($('.slide-menu').offset().left).toBeLessThan(0);
       });
@@ -99,6 +100,14 @@ $(function() {
      * Remember, loadFeed() is asynchronous so this test will require
      * the use of Jasmine's beforeEach and asynchronous done() function.
      */
+    beforeEach(function(done){
+      loadFeed(0, done);
+    });
+
+    it('> At least 1 entry was loaded and added to the DOM', function() {
+      var entries = $('.feed .entry');
+      expect(entries.length).not.toBeLessThan(1);
+    });
   });
 
   /* TODO: Write a new test suite named "New Feed Selection" */
@@ -107,6 +116,28 @@ $(function() {
      * by the loadFeed function that the content actually changes.
      * Remember, loadFeed() is asynchronous.
      */
+    var firstFeedEntries = [];
+
+    beforeAll(function(done){
+      loadFeed(0, function(){
+        // first load done. store a list of the feed entries to compare later
+        firstFeedEntries = $('.feed .entry-link');
+
+        // Grab a list of feed ids so we can get the last id in the list
+        var feedIds = Array.from(allFeeds.keys());
+        loadFeed(feedIds.pop(), done);
+      });
+    });
+
+    it('> More than one feed exists', function() {
+      expect(allFeeds.length).toBeGreaterThan(1);
+    });
+
+    it('> Feed content changes on change feed', function() {
+      var entries = $('.feed .entry-link');
+      expect(entries.eq(0).attr('href')).not.toBe(firstFeedEntries.eq(0).attr('href'));
+    });
+
   });
 
 }());
